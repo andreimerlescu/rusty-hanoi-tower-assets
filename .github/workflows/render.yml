@@ -52,16 +52,40 @@ jobs:
           echo "✅ WAV files produced:"
           ls -lh assets/wav/
 
-      - name: Upload WAV artifacts
+      - name: Upload move.wav
         uses: actions/upload-artifact@v4
         with:
-          name: sound-assets-wav
-          path: assets/wav/
-          retention-days: 7
+          name: move.wav
+          path: assets/wav/move.wav
 
-      - name: Upload MIDI artifacts (bonus)
+      - name: Upload invalid.wav
+        uses: actions/upload-artifact@v4
+        with:
+          name: invalid.wav
+          path: assets/wav/invalid.wav
+
+      - name: Upload win.wav
+        uses: actions/upload-artifact@v4
+        with:
+          name: win.wav
+          path: assets/wav/win.wav
+
+      - name: Upload click.wav
+        uses: actions/upload-artifact@v4
+        with:
+          name: click.wav
+          path: assets/wav/click.wav
+
+      - name: Upload hint.wav
+        uses: actions/upload-artifact@v4
+        with:
+          name: hint.wav
+          path: assets/wav/hint.wav
+
+      - name: Upload MIDI files
         uses: actions/upload-artifact@v4
         with:
           name: sound-assets-midi
           path: assets/*.mid
-          retention-days: 30
+          retention-days: 7
+
