@@ -2,12 +2,6 @@ name: Render Assets
 
 on:
   workflow_dispatch:
-    inputs:
-      ref:
-        description: 'Branch name or commit SHA to build from'
-        required: true
-        default: 'main'
-        type: string
 
 jobs:
   build-assets:
