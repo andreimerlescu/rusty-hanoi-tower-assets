@@ -1,0 +1,75 @@
+name: Render Assets
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch name or commit SHA to build from'
+        required: true
+        default: 'main'
+        type: string
+
+jobs:
+  build-assets:
+    name: Generate MIDIs and Convert to WAV
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository at ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: |
+          pip install midiutil
+
+      - name: Install MIDI-to-WAV conversion tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fluidsynth fluid-soundfont-gm
+
+      - name: Generate MIDI files
+        run: |
+          python generate-sounds.py
+
+      - name: Convert MIDI files to WAV
+        run: |
+          SOUNDFONT="/usr/share/sounds/sf2/FluidR3_GM.sf2"
+          mkdir -p assets/wav
+
+          for mid_file in assets/*.mid; do
+            name=$(basename "$mid_file" .mid)
+            echo "Converting $name.mid → $name.wav"
+            fluidsynth \
+              --quiet \
+              --no-shell \
+              --audio-driver=file \
+              --output-file="assets/wav/${name}.wav" \
+              --sample-rate=44100 \
+              "$SOUNDFONT" \
+              "$mid_file"
+          done
+
+          echo ""
+          echo "✅ WAV files produced:"
+          ls -lh assets/wav/
+
+      - name: Upload WAV artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sound-assets-wav
+          path: assets/wav/
+          retention-days: 7
+
+      - name: Upload MIDI artifacts (bonus)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sound-assets-midi
+          path: assets/*.mid
+          retention-days: 30
