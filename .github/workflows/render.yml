@@ -47,11 +47,9 @@ jobs:
             name=$(basename "$mid_file" .mid)
             echo "Converting $name.mid → $name.wav"
             fluidsynth \
-              --quiet \
-              --no-shell \
-              --audio-driver=file \
-              --output-file="assets/wav/${name}.wav" \
-              --sample-rate=44100 \
+              -ni \
+              -F "assets/wav/${name}.wav" \
+              -r 44100 \
               "$SOUNDFONT" \
               "$mid_file"
           done
